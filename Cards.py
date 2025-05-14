@@ -32,32 +32,4 @@ class Card:
 
         canvas.blit(scaled_card_img,(cardf_x,cardf_y))
         canvas.blit(scaled_content_img,(f_x,f_y))
-
-    
-
-    #@property
-    #def x(self):
-    #    return self.x
-
-    #@x.setter
-    #def x(self, new_x):
-    #    self.x = new_x
-
-    #@property
-    #def y(self):
-    #    return self.y
-
-    #@y.setter
-    #def y(self, new_y):
-    #    self.y = new_y
-    
-    #@property
-    #def content(self):
-    #    return self.content
-
-    #@content.setter
-    #def content(self, new_content):
-    #    self.content = new_content
-
-
-    
+        
