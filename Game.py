@@ -3,27 +3,33 @@ from sys import exit
 import Cards
 import math
 
-Canvas_Width = 800
-Canvas_Height = 600
+Display_Width = 800
+Display_Height = 600
 
-skeleton_img = pygame.image.load("sprites/skeleton.png")
-card = Cards.Card(skeleton_img,Canvas_Width/2,Canvas_Height/2);
+Canvas_Width = 320
+Canvas_Height = 240
 
-card.hscale = 3
-card.vscale = 3
+skeleton_img = pygame.image.load("sprites/Skeleton.png")
+card = Cards.Card(skeleton_img,Canvas_Width/2,Canvas_Height/2)
+
+#card.hscale = 3
+#card.vscale = 3
 
 pygame.init()
-window = pygame.display.set_mode((Canvas_Width, Canvas_Height))
+window = pygame.display.set_mode((Display_Width, Display_Height))
+canvas = pygame.Surface((Canvas_Width, Canvas_Height))
 pygame.display.set_caption("Cardungeon")
 
 def Draw():
     window.fill((20,20,20))
 
-    card.Draw(window)
+    card.Draw(canvas)
 
+    scaled_canvas = pygame.transform.scale(canvas,(Display_Width, Display_Height))
+    window.blit(scaled_canvas,(0,0))
     pygame.display.update()
 
-elapsed = 0.0
+#elapsed = 0.0
 
 Running = True
 
@@ -32,11 +38,11 @@ while Running:
         if event.type == pygame.QUIT:
             Running = False
 
-    elapsed += 0.0015
+#    elapsed += 0.0015
 
-    card.x = Canvas_Width/2 + ((Canvas_Width/4)*math.sin(2*elapsed))
-    card.hscale = 3 + (2*math.sin(elapsed))
-    card.vscale = card.hscale
+#    card.x = Canvas_Width/2 + ((Canvas_Width/4)*math.sin(2*elapsed))
+#    card.hscale = 3 + (2*math.sin(elapsed))
+#    card.vscale = card.hscale
     
     Draw()
 
