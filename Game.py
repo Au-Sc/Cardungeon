@@ -2,15 +2,21 @@ import pygame
 from sys import exit
 import Cards
 import math
+import Board
 
 Display_Width = 800
 Display_Height = 600
 
-Canvas_Width = 320
-Canvas_Height = 240
+Canvas_Width = 282
+Canvas_Height = (Canvas_Width/4)*3
 
 skeleton_img = pygame.image.load("sprites/Skeleton.png")
-card = Cards.Card(skeleton_img,Canvas_Width/2,Canvas_Height/2)
+#card = Cards.Card(skeleton_img,Canvas_Width/2,Canvas_Height/2)
+
+board = Board.Card_Board(4, 3)
+for x in range(board.WIDTH):
+    for y in range(board.HEIGHT):
+        board.put(x, y, Cards.Card(skeleton_img, 72 + x*(Cards.Card.card_width + 10), 40 + y*(Cards.Card.card_height + 10)))
 
 #card.hscale = 3
 #card.vscale = 3
@@ -23,8 +29,9 @@ pygame.display.set_caption("Cardungeon")
 def Draw():
     window.fill((20,20,20))
 
-    card.Draw(canvas)
-
+    #card.Draw(canvas)
+    board.Draw(canvas)
+    
     scaled_canvas = pygame.transform.scale(canvas,(Display_Width, Display_Height))
     window.blit(scaled_canvas,(0,0))
     pygame.display.update()
