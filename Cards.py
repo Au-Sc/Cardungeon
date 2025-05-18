@@ -33,3 +33,5 @@ class Card:
         canvas.blit(scaled_card_img,(cardf_x,cardf_y))
         canvas.blit(scaled_content_img,(f_x,f_y))
         
+    def Update(self, game_data, deltatime):
+        pass

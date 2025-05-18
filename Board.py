@@ -47,5 +47,7 @@ class Card_Board:
                 if (isinstance(self.get(x,y), Card)):
                     self.grid[x][y].Draw(canvas)
     
-    def Update(self, deltatime):
-        pass
+    def Update(self, game_data, deltatime):
+        for x in range(self.WIDTH):
+            for y in range (self.HEIGHT):
+                self.grid[x][y].Update(game_data, deltatime)
