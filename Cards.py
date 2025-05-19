@@ -1,3 +1,4 @@
+import Game_Resources
 import Game_Objects
 from pygame import image
 from pygame import transform
@@ -5,7 +6,7 @@ from pygame import Rect
 
 class Card((Game_Objects.Rectangular_Game_object)):
 
-    card_img = image.load("sprites/Card.png")
+    card_img = Game_Resources.get_texture("Card")
     
     def __init__(self, i_x, i_y, i_content_img):
         w = Card.card_img.get_width()
@@ -26,7 +27,7 @@ class Card((Game_Objects.Rectangular_Game_object)):
         canvas.blit(Card.card_img,(self.x, self.y))
         canvas.blit(self.content_img,content_pos)
         
-    def Update(self, game_data, deltatime):
+    def Update(self, deltatime):
         pass
-        #if game_data.mouse_button_down and self.contains_point(game_data.mouse_pos):
+        #if Game_Resources.mouse_button_down and self.contains_point(Game_Resources.mouse_pos):
          #       self.visible = not self.visible

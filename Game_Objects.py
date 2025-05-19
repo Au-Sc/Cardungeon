@@ -10,7 +10,7 @@ class Game_object(ABC):
         pass
 
     @abstractmethod
-    def Update(self, game_data, deltatime):
+    def Update(self, deltatime):
         pass
 
 class Rectangular_Game_object(Game_object):

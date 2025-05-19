@@ -1,3 +1,4 @@
+import Game_Resources
 from Cards import Card
 import Game_Objects
 import Deck
@@ -62,15 +63,15 @@ class Card_board(Game_Objects.Rectangular_Game_object):
                 if (isinstance(self.get(x,y), Card)):
                     self.grid[x][y].Draw(canvas)
     
-    def Update(self, game_data, deltatime):
-        if(game_data.mouse_button_down):
-            for obj in game_data.game_objects:
+    def Update(self, deltatime):
+        if(Game_Resources.mouse_button_down):
+            for obj in Game_Resources.game_objects:
                 if isinstance(obj, Card):
-                    if obj.contains_point(game_data.mouse_pos):
+                    if obj.contains_point(Game_Resources.mouse_pos):
                         pos = self.find_card(obj)
                         if (pos != (-1,-1)):
                             found_deck = False
-                            for o in game_data.game_objects:
+                            for o in Game_Resources.game_objects:
                                 if(isinstance(o,Deck.Deck)):
                                     found_deck = True
                                     if (o.card_amount > 0):
@@ -84,4 +85,4 @@ class Card_board(Game_Objects.Rectangular_Game_object):
         for x in range(self.COLUMNS):
             for y in range (self.ROWS):
                 if (isinstance(self.get(x,y), Card)):
-                    self.grid[x][y].Update(game_data, deltatime)
+                    self.grid[x][y].Update(deltatime)

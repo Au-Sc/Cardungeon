@@ -1,3 +1,4 @@
+import Game_Resources
 import Game_Objects
 from pygame import image, font
 
@@ -5,7 +6,7 @@ font.init()
 
 class Deck(Game_Objects.Rectangular_Game_object):
 
-    card_backside_img = image.load("sprites/Card_backside.png")
+    card_backside_img = Game_Resources.get_texture("Card_backside")
     count_font = font.Font('freesansbold.ttf',15)
     
     def __init__(self, i_card_amount):
@@ -19,5 +20,5 @@ class Deck(Game_Objects.Rectangular_Game_object):
         canvas.blit(Deck.card_backside_img, (self.x, self.y))
         canvas.blit(text,text_rect)
 
-    def Update(self, game_data, deltatime):
+    def Update(self, deltatime):
         pass
