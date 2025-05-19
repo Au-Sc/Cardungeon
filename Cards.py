@@ -1,37 +1,31 @@
+import Game_Objects
 from pygame import image
 from pygame import transform
+from pygame import Rect
 
-class Card:
+class Card((Game_Objects.Clickable_Rect_Game_object)):
 
     card_img = image.load("sprites/Card.png")
-    card_width = card_img.get_width()
-    card_height = card_img.get_height()
     
-    def __init__(self, i_content_img, i_x, i_y):
+    def __init__(self, i_x, i_y, i_content_img):
+        w = Card.card_img.get_width()
+        h = Card.card_img.get_height()
+        super().__init__(i_x, i_y, w, h)
         self.content_img = i_content_img
-        self.x = i_x
-        self.y = i_y
-        self.width = i_content_img.get_width()
-        self.height = i_content_img.get_height()
-        self.hscale = 1
-        self.vscale = 1
+        self.content_img_width = i_content_img.get_width()
+        self.content_img_height = i_content_img.get_height()
+        self.visible = True
 
     def Draw(self, canvas):
-        scaled_cardw = Card.card_width * self.hscale
-        scaled_cardh = Card.card_height * self.vscale
-        scaled_w = self.width * self.hscale
-        scaled_h = self.height * self.vscale
+        if not(self.visible):
+            return
         
-        cardf_x = self.x - (scaled_cardw/2)
-        cardf_y = self.y - (scaled_cardh/2) 
-        f_x = self.x - (scaled_w/2)
-        f_y = self.y - (scaled_h/2)
+        center = self.get_center_global()
+        content_pos = (center[0] - (self.content_img_width/2), center[1] - (self.content_img_height/2))
 
-        scaled_card_img = transform.scale(Card.card_img,(scaled_cardw,scaled_cardh))
-        scaled_content_img = transform.scale(self.content_img, (scaled_w,scaled_h))
-
-        canvas.blit(scaled_card_img,(cardf_x,cardf_y))
-        canvas.blit(scaled_content_img,(f_x,f_y))
+        canvas.blit(Card.card_img,(self.x, self.y))
+        canvas.blit(self.content_img,content_pos)
         
     def Update(self, game_data, deltatime):
-        pass
+        if game_data.mouse_button_down and self.got_clicked(game_data.mouse_pos):
+                self.visible = not self.visible

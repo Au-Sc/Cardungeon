@@ -1,8 +1,10 @@
 import pygame
 from sys import exit
+import Game_Objects
 import Cards
 import math
 import Board
+import Deck
 
 #DEFINE IMORTANT INITIAL GAME ATTRIBUTES
 class Game_data():
@@ -13,6 +15,9 @@ class Game_data():
     CANVAS_WIDTH = 282
     CANVAS_HEIGHT = (CANVAS_WIDTH/4)*3
 
+    CANVAStoDISPLAY_width_ratio = CANVAS_WIDTH/DISPLAY_WIDTH
+    CANVAStoDISPLAY_height_ratio = CANVAS_HEIGHT/DISPLAY_HEIGHT
+
     mouse_pos = (0,0)
     mouse_button_down = False
     mouse_button_helddown = False
@@ -22,13 +27,19 @@ class Game_data():
 #GAMEPLAY TESTING VARIABLES // MUST BE DELETED AT THE FINAL VERSION, THESE ARE ONLY TO TEST STUFF AROUND AND DEBUG
 skeleton_img = pygame.image.load("sprites/Skeleton.png")
 
-board = Board.Card_Board(4, 3)
-for x in range(board.WIDTH):
-    for y in range(board.HEIGHT):
-        board.put(x, y, Cards.Card(skeleton_img, 72 + x*(Cards.Card.card_width + 10), 40 + y*(Cards.Card.card_height + 10)))
+board = Board.Card_board(4, 3)
+board.x = 72
+board.y = 40
+for cols in range(board.COLUMNS):
+    for rows in range(board.ROWS):
+        c = Cards.Card(0, 0, skeleton_img)
+        c_x = board.x + cols*(c.width + Board.Card_board.card_separation_offset[0])
+        c_y = board.y  + rows*(c.height + Board.Card_board.card_separation_offset[1])
+        c.set_position_centered((c_x, c_y))
+        board.put(cols, rows, c)
+deck = Deck.Deck(20)
 
-blotch = [(255,255,255),(0,0),30,0]
-blotch2 = [(255,0,0),(0,0),10,0]
+blotch = [(255,0,0),(0,0),3,0]
 
 
 #END OF GAMEPLAY TESTING VARIABLES SECTION // REMEMBER TO DELETE AT THE FINAL VERSION, THESE ARE ONLY TO TEST STUFF AROUND AND DEBUG
@@ -58,17 +69,22 @@ def Read_Input(events):
 
         
         if e.type == pygame.MOUSEMOTION:
-            Game_data.mouse_pos = e.pos
+            Game_data.mouse_pos = (e.pos[0]*Game_data.CANVAStoDISPLAY_width_ratio,e.pos[1]*Game_data.CANVAStoDISPLAY_height_ratio)
 
 
 #DEFINE UPDATING STATE OF THE GAME LOOP
 def Game_Loop_Update(deltatime):
+    board.Update(Game_data, deltatime)
+    deck.Update(Game_data, deltatime)
 
 #DEFINE DRAWING STATE OF THE GAME LOOP
 def Game_Loop_Draw():
     Window.fill((20,20,20))
     
     board.Draw(canvas)
+    deck.Draw(canvas)
+    
+    pygame.draw.circle(canvas,blotch[0],Game_data.mouse_pos,blotch[2],blotch[3])
     
     scaled_canvas = pygame.transform.scale(canvas,(Game_data.DISPLAY_WIDTH, Game_data.DISPLAY_HEIGHT))
     Window.blit(scaled_canvas,(0,0))
@@ -99,7 +115,7 @@ while Game_data.RUNNING:
     
     if(Delta_time >= Target_time):
         Read_Input(pygame.event.get())
-        Game_Loop_Update(0)
+        Game_Loop_Update(Delta_time)
         Game_Loop_Draw()
         Delta_time = 0
 
