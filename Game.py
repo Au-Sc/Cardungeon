@@ -23,22 +23,29 @@ class Game_data():
     mouse_button_helddown = False
     mouse_button_up = False
 
+    game_objects = []
+
 
 #GAMEPLAY TESTING VARIABLES // MUST BE DELETED AT THE FINAL VERSION, THESE ARE ONLY TO TEST STUFF AROUND AND DEBUG
 skeleton_img = pygame.image.load("sprites/Skeleton.png")
 
 board = Board.Card_board(4, 3)
+Game_data.game_objects.append(board)
+
 board.x = 72
 board.y = 40
 for cols in range(board.COLUMNS):
     for rows in range(board.ROWS):
         c = Cards.Card(0, 0, skeleton_img)
+        Game_data.game_objects.append(c)
+        
         c_x = board.x + cols*(c.width + Board.Card_board.card_separation_offset[0])
         c_y = board.y  + rows*(c.height + Board.Card_board.card_separation_offset[1])
         c.set_position_centered((c_x, c_y))
         board.put(cols, rows, c)
-deck = Deck.Deck(20)
 
+deck = Deck.Deck(20)
+Game_data.game_objects.append(deck)
 blotch = [(255,0,0),(0,0),3,0]
 
 

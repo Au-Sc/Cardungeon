@@ -3,7 +3,7 @@ from pygame import image
 from pygame import transform
 from pygame import Rect
 
-class Card((Game_Objects.Clickable_Rect_Game_object)):
+class Card((Game_Objects.Rectangular_Game_object)):
 
     card_img = image.load("sprites/Card.png")
     
@@ -27,5 +27,6 @@ class Card((Game_Objects.Clickable_Rect_Game_object)):
         canvas.blit(self.content_img,content_pos)
         
     def Update(self, game_data, deltatime):
-        if game_data.mouse_button_down and self.got_clicked(game_data.mouse_pos):
-                self.visible = not self.visible
+        pass
+        #if game_data.mouse_button_down and self.contains_point(game_data.mouse_pos):
+         #       self.visible = not self.visible
