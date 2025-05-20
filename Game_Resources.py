@@ -1,4 +1,6 @@
-from pygame import image
+from pygame import image, font
+
+font.init()
 
 #DEFINE IMPORTANT GLOBALLY ACCESSIBLE GAME ATTRIBUTES
 RUNNING = False
@@ -16,7 +18,19 @@ mouse_button_down = False
 mouse_button_helddown = False
 mouse_button_up = False
 
+#GAME OBJECT REFERENCES
 game_objects = []
+game_board = None
+game_deck = None
+game_player = None
+
+def add_game_object(obj): 
+    if not (obj in game_objects):
+        game_objects.append(obj)
+
+def remove_game_object(obj): 
+    if (obj in game_objects):
+        game_objects.remove(obj)
 
 #SPRITE ASSETS
 Textures = dict()
@@ -32,3 +46,6 @@ def load_texture(name: str):
     texture = image.load(pathstr)
     Textures[name] = texture
     return texture
+
+#TEXT ASSETS
+main_font = font.Font('freesansbold.ttf',15)

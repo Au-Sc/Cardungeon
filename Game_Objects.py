@@ -1,9 +1,11 @@
+import Game_Resources
 from abc import ABC, abstractmethod
 
 class Game_object(ABC):
     def __init__(self, i_x, i_y):
         self.x = i_x
         self.y = i_y
+        Game_Resources.add_game_object(self)
     
     @abstractmethod
     def Draw(self, canvas):

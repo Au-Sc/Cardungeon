@@ -1,30 +1,24 @@
 import pygame
 import Game_Resources
-from sys import exit
 import Game_Objects
+from sys import exit
 import Cards
-import math
 import Board
 import Deck
+import Player
 
 #GAMEPLAY TESTING VARIABLES // MUST BE DELETED AT THE FINAL VERSION, THESE ARE ONLY TO TEST STUFF AROUND AND DEBUG
 board = Board.Card_board(4, 3)
-Game_Resources.game_objects.append(board)
+player = Player.Player()
 
-board.x = 72
+board.x = 52
 board.y = 40
 for cols in range(board.COLUMNS):
     for rows in range(board.ROWS):
-        c = Cards.Card(0, 0, Game_Resources.get_texture("Skeleton"))
-        Game_Resources.game_objects.append(c)
-        
-        c_x = board.x + cols*(c.width + Board.Card_board.card_separation_offset[0])
-        c_y = board.y  + rows*(c.height + Board.Card_board.card_separation_offset[1])
-        c.set_position_centered((c_x, c_y))
+        c = Cards.Enemy_Card(0, 0, Game_Resources.get_texture("Skeleton"), 1)
         board.put(cols, rows, c)
 
 deck = Deck.Deck(20)
-Game_Resources.game_objects.append(deck)
 blotch = [(255,0,0),(0,0),3,0]
 
 
@@ -60,15 +54,15 @@ def Read_Input(events):
 
 #DEFINE UPDATING STATE OF THE GAME LOOP
 def Game_Loop_Update(deltatime):
-    board.Update(deltatime)
-    deck.Update(deltatime)
+    for obj in Game_Resources.game_objects:
+        obj.Update(deltatime)
 
 #DEFINE DRAWING STATE OF THE GAME LOOP
 def Game_Loop_Draw():
     Window.fill((20,20,20))
-    
-    board.Draw(canvas)
-    deck.Draw(canvas)
+
+    for obj in Game_Resources.game_objects:
+        obj.Draw(canvas)
     
     pygame.draw.circle(canvas,blotch[0],Game_Resources.mouse_pos,blotch[2],blotch[3])
     
