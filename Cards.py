@@ -60,3 +60,7 @@ class Enemy_Card(Card):
 
     def Draw(self, canvas):
         super().Draw(canvas)
+        heart_img = Game_Resources.get_texture("Heart_icon")
+        offset = self.width/(self.health + 1)
+        for x in range(self.health):
+            canvas.blit(heart_img, (self.x + (x+1)*offset - heart_img.get_width()/2,self.y))

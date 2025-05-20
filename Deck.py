@@ -14,7 +14,7 @@ class Deck(Game_Objects.Rectangular_Game_object):
 
     def draw_card(self):
         if(self.card_amount > 0):
-            card = Cards.Enemy_Card(0,0,Game_Resources.get_texture("Skeleton"),1)
+            card = Cards.Enemy_Card(0,0,Game_Resources.get_texture("Skeleton"),6)
             self.card_amount -= 1
             return card
         else:
