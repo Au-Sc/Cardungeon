@@ -14,11 +14,13 @@ class Player(Game_Objects.Game_object):
     def Update(self, deltatime):
         #check for click
         if(Game_Resources.mouse_button_down):
-            for obj in Game_Resources.game_objects:
-                if isinstance(obj, Cards.Enemy_Card):
-                    if obj.contains_point(Game_Resources.mouse_pos):
-                        self.attack(obj)
-                        break
+            for x in range(Game_Resources.game_board.COLUMNS):
+                for y in range(Game_Resources.game_board.ROWS):
+                    obj = Game_Resources.game_board.grid[x][y]
+                    if isinstance(obj, Cards.Enemy_Card):
+                        if obj.contains_point(Game_Resources.mouse_pos):
+                            self.attack(obj)
+                            break
     
     def Draw(self, canvas):
         pass
