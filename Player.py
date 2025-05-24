@@ -1,26 +1,26 @@
-import Game_Resources
 import Game_Objects
+import pygame
 import Cards
 
-class Player(Game_Objects.Game_object):
-    def __init__(self):
-        super().__init__(0,0)
-        Game_Resources.game_player = self
+class Player(Game_Objects.GameObject):
+    def __init__(self, game):
+        super().__init__(game,0,0)
+        self.game.player = self
     
     def attack(self, enemy):
         if isinstance(enemy, Cards.Enemy_Card):
             enemy.get_attacked(1)
     
-    def Update(self, deltatime):
-        #check for click
-        if(Game_Resources.mouse_button_down):
-            for x in range(Game_Resources.game_board.COLUMNS):
-                for y in range(Game_Resources.game_board.ROWS):
-                    obj = Game_Resources.game_board.grid[x][y]
-                    if isinstance(obj, Cards.Enemy_Card):
-                        if obj.contains_point(Game_Resources.mouse_pos):
-                            self.attack(obj)
-                            break
-    
-    def Draw(self, canvas):
+    def update(self):
+        for e in self.game.events:
+            if e.type == pygame.MOUSEBUTTONDOWN :
+                for x in range(self.game.board.COLUMNS):
+                    for y in range(self.game.board.ROWS):
+                        obj = self.game.board.get(x,y)
+                        if isinstance(obj, Cards.Enemy_Card):
+                            if obj.contains_point(self.game.mouse_pos):
+                                self.attack(obj)
+                                break
+        
+    def render(self):
         pass

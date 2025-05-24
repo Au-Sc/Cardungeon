@@ -7,98 +7,118 @@ import Board
 import Deck
 import Player
 
-#GAMEPLAY TESTING VARIABLES // MUST BE DELETED AT THE FINAL VERSION, THESE ARE ONLY TO TEST STUFF AROUND AND DEBUG
-board = Board.Card_board(4, 3)
-player = Player.Player()
 
-board.x = 52
-board.y = 40
-for cols in range(board.COLUMNS):
-    for rows in range(board.ROWS):
-        c = Cards.Enemy_Card(0, 0, Game_Resources.get_texture("Skeleton"), 1)
-        board.put(cols, rows, c)
-
-deck = Deck.Deck(20)
-blotch = [(255,0,0),(0,0),3,0]
-
-
-#END OF GAMEPLAY TESTING VARIABLES SECTION // REMEMBER TO DELETE AT THE FINAL VERSION, THESE ARE ONLY TO TEST STUFF AROUND AND DEBUG
-
-
-#DEFINE INPUT READING STATE OF THE GAME LOOP
-def Read_Input(events):
-    #resetting some input previously received
-    Game_Resources.mouse_button_down = False
-    Game_Resources.mouse_button_up = False
+class Game():
     
-    #receiving new input
-    for e in events:
-        if e.type == pygame.QUIT:
-            Game_Resources.RUNNING = False
+    def __init__(self):
+        #GAME ATRIBUTES AND VARIABLES BELOW
+        self.RUNNING = False
+        self.delta_time = 0
+        self.game_objects = list()
+        self.events = list()
+        self.mouse_pos = (0,0)
+
+        #TEXT ASSETS
+        pygame.font.init()
+        self.main_font = pygame.font.Font('freesansbold.ttf',15)
+
+        #SPRITE ASSETS
+        self.textures = dict()
+        
+        #GAME OBJECTS BELOW
+        self.board = Board.Card_board(self, 4, 3)
+        self.board.x = 52
+        self.board.y = 0
+        for cols in range(self.board.COLUMNS):
+            for rows in range(self.board.ROWS):
+                c = Cards.Enemy_Card(self, 0, 0, self.get_texture("Skeleton"), 1)
+                self.board.put(cols, rows, c)
+                
+        self.player = Player.Player(self)
+        self.deck = Deck.Deck(self, 20)
+        self.blotch = [(255, 0, 0), (0, 0), 3, 0]
+        
+        #START GAME WINDOW BELOW
+        pygame.init()
+        self.window = pygame.display.set_mode((Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT))
+        self.canvas = pygame.Surface((Game_Resources.CANVAS_WIDTH, Game_Resources.CANVAS_HEIGHT))
+        pygame.display.set_caption("Cardungeon")
+    
+    def get_texture(self, name: str):
+        texture = self.textures.get(name, None)
+
+        if texture is None:
+            return self.load_texture(name)
+        else:
+            return texture
+
+    def load_texture(self, name: str):
+        pathstr = f"sprites/{name}.png"
+        texture = pygame.image.load(pathstr)
+        self.textures[name] = texture
+        return texture
+        
+    def add_game_object(self, obj): 
+        if not (obj in self.game_objects):
+            self.game_objects.append(obj)
+
+    def remove_game_object(self, obj): 
+        if (obj in self.game_objects):
+            self.game_objects.remove(obj)
+
+    def run(self):
+        #START GAME FPS MANAGEMENT STUFF
+        TARGET_TIME = (1000/60) #(milliseconds / frames) proportion
+        last_time = pygame.time.get_ticks()
+        self.delta_time = 0
+        
+        #START GAME LOOP
+        self.RUNNING = True
+        
+        while self.RUNNING:
+            now = pygame.time.get_ticks()
+            self.delta_time += now - last_time
             
-        if e.type == pygame.MOUSEBUTTONDOWN:
-            if e.button == 1:
-                Game_Resources.mouse_button_down = True
-                Game_Resources.mouse_button_helddown = True
-
+            if(self.delta_time >= TARGET_TIME):
+                self.update()
+                self.render()
+                self.delta_time = 0
+            
+            last_time = now
         
-        if e.type == pygame.MOUSEBUTTONUP:
-            if e.button == 1:
-                Game_Resources.mouse_button_up = True
-                Game_Resources.mouse_button_helddown = False
+        pygame.quit()
 
+    def update(self):
+        #catch the player input first.
+        self.events = pygame.event.get()
+
+        for e in self.events:
+            if e.type == pygame.MOUSEMOTION:
+                self.blotch[1] = e.pos
+                self.mouse_pos = (e.pos[0] * Game_Resources.CANVAStoDISPLAY_width_ratio,
+                                  e.pos[1] * Game_Resources.CANVAStoDISPLAY_height_ratio)
+            if e.type == pygame.QUIT:
+                self.RUNNING = False
         
-        if e.type == pygame.MOUSEMOTION:
-            Game_Resources.mouse_pos = (e.pos[0]*Game_Resources.CANVAStoDISPLAY_width_ratio,e.pos[1]*Game_Resources.CANVAStoDISPLAY_height_ratio)
+        #now update the game.
+        for obj in self.game_objects:
+            obj.update()
+        
+    def render(self):
+        self.window.fill((20,20,20))
+        
+        for obj in self.game_objects:
+            obj.render()
+        
+        scaled_canvas = pygame.transform.scale(self.canvas,(Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT))
+        self.window.blit(scaled_canvas,(0,0))
+        
+        pygame.draw.circle(self.window, self.blotch[0], self.blotch[1], self.blotch[2], self.blotch[3])
+        
+        pygame.display.update()
+        self.canvas.fill((0,0,0))
 
 
-#DEFINE UPDATING STATE OF THE GAME LOOP
-def Game_Loop_Update(deltatime):
-    for obj in Game_Resources.game_objects:
-        obj.Update(deltatime)
-
-#DEFINE DRAWING STATE OF THE GAME LOOP
-def Game_Loop_Draw():
-    Window.fill((20,20,20))
-
-    for obj in Game_Resources.game_objects:
-        obj.Draw(canvas)
-    
-    pygame.draw.circle(canvas,blotch[0],Game_Resources.mouse_pos,blotch[2],blotch[3])
-    
-    scaled_canvas = pygame.transform.scale(canvas,(Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT))
-    Window.blit(scaled_canvas,(0,0))
-    
-    pygame.display.update()
-    canvas.fill((0,0,0))
-
-
-#START GAME WINDOW
-pygame.init()
-Window = pygame.display.set_mode((Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT))
-canvas = pygame.Surface((Game_Resources.CANVAS_WIDTH, Game_Resources.CANVAS_HEIGHT))
-pygame.display.set_caption("Cardungeon")
-
-#START GAME FPS MANAGEMENT STUFF
-Last_time = pygame.time.get_ticks()
-Delta_time = 0
-Target_time = (1000/60) #(milliseconds / frames) proportion
-
-#START GAME LOOP
-
-Game_Resources.RUNNING = True
-
-while Game_Resources.RUNNING:
-
-    now = pygame.time.get_ticks()
-    Delta_time += now - Last_time
-    
-    if(Delta_time >= Target_time):
-        Read_Input(pygame.event.get())
-        Game_Loop_Update(Delta_time)
-        Game_Loop_Draw()
-        Delta_time = 0
-
-    Last_time = now
-
-pygame.quit()
+#RUN THE GAME!!
+game = Game()
+game.run()

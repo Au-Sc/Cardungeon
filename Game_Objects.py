@@ -1,23 +1,26 @@
 import Game_Resources
 from abc import ABC, abstractmethod
 
-class Game_object(ABC):
-    def __init__(self, i_x, i_y):
+class GameObject(ABC):
+
+    def __init__(self, game, i_x, i_y):
+        self.game = game
+        game.add_game_object(self)
         self.x = i_x
         self.y = i_y
-        Game_Resources.add_game_object(self)
     
     @abstractmethod
-    def Draw(self, canvas):
+    def render(self):
         pass
 
     @abstractmethod
-    def Update(self, deltatime):
+    def update(self):
         pass
 
-class Rectangular_Game_object(Game_object):
-    def __init__(self, i_x, i_y, i_width, i_height):
-        super().__init__(i_x, i_y)
+class RectangularGameObject(GameObject):
+
+    def __init__(self, game, i_x, i_y, i_width, i_height):
+        super().__init__(game, i_x, i_y)
         self.width = i_width
         self.height = i_height
 
