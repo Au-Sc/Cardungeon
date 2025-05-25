@@ -11,7 +11,7 @@ class Deck(Game_Objects.RectangularGameObject):
 
     def draw_card(self):
         if(self.card_amount > 0):
-            card = Cards.Enemy_Card(self.game, 0, 0, self.game.get_texture("Skeleton"), 2)
+            card = Cards.EnemyCard(self.game, 0, 0, self.game.get_texture("Skeleton"), 2)
             self.game.add_game_object(card)
             self.card_amount -= 1
             return card
@@ -21,7 +21,7 @@ class Deck(Game_Objects.RectangularGameObject):
     def render(self):
         text = self.game.main_font.render(str(self.card_amount),True,(255,255,255))
         text_rect = text.get_rect()
-        text_rect.center = (self.get_center_global())
+        text_rect.center = self.get_center_global()
         self.game.canvas.blit(self.backside_img, (self.x, self.y))
         self.game.canvas.blit(text,text_rect)
 

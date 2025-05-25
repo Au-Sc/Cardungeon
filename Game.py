@@ -21,6 +21,8 @@ class Game():
         #TEXT ASSETS
         pygame.font.init()
         self.main_font = pygame.font.Font('freesansbold.ttf',15)
+        self.big_font = pygame.font.Font('freesansbold.ttf',60)
+        self.small_font = pygame.font.Font('freesansbold.ttf',30)
 
         #SPRITE ASSETS
         self.textures = dict()
@@ -31,7 +33,7 @@ class Game():
         self.board.y = 0
         for cols in range(self.board.COLUMNS):
             for rows in range(self.board.ROWS):
-                c = Cards.Enemy_Card(self, 0, 0, self.get_texture("Skeleton"), 1)
+                c = Cards.EnemyCard(self, 0, 0, self.get_texture("Skeleton"), 1)
                 self.board.put(cols, rows, c)
                 
         self.player = Player.Player(self)
@@ -42,6 +44,7 @@ class Game():
         pygame.init()
         self.window = pygame.display.set_mode((Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT))
         self.canvas = pygame.Surface((Game_Resources.CANVAS_WIDTH, Game_Resources.CANVAS_HEIGHT))
+        self.text_canvas = pygame.Surface((Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT), pygame.SRCALPHA)
         pygame.display.set_caption("Cardungeon")
     
     def get_texture(self, name: str):
@@ -65,6 +68,12 @@ class Game():
     def remove_game_object(self, obj): 
         if (obj in self.game_objects):
             self.game_objects.remove(obj)
+
+    def scale_to_display_size(self, pos: (float,float)):
+        return (pos[0]*Game_Resources.DtoC_w_ratio, pos[1]*Game_Resources.DtoC_h_ratio)
+
+    def scale_to_canvas_size(self, pos: (float,float)):
+        return (pos[0]*Game_Resources.CtoD_w_ratio, pos[1]*Game_Resources.CtoD_h_ratio)
 
     def run(self):
         #START GAME FPS MANAGEMENT STUFF
@@ -95,8 +104,7 @@ class Game():
         for e in self.events:
             if e.type == pygame.MOUSEMOTION:
                 self.blotch[1] = e.pos
-                self.mouse_pos = (e.pos[0] * Game_Resources.CANVAStoDISPLAY_width_ratio,
-                                  e.pos[1] * Game_Resources.CANVAStoDISPLAY_height_ratio)
+                self.mouse_pos = self.scale_to_canvas_size(e.pos)
             if e.type == pygame.QUIT:
                 self.RUNNING = False
         
@@ -106,17 +114,19 @@ class Game():
         
     def render(self):
         self.window.fill((20,20,20))
+        self.canvas.fill((0,0,0))
+        self.text_canvas.fill((0,0,0,0))
         
         for obj in self.game_objects:
             obj.render()
         
         scaled_canvas = pygame.transform.scale(self.canvas,(Game_Resources.DISPLAY_WIDTH, Game_Resources.DISPLAY_HEIGHT))
         self.window.blit(scaled_canvas,(0,0))
+        self.window.blit(self.text_canvas,(0,0))
         
         pygame.draw.circle(self.window, self.blotch[0], self.blotch[1], self.blotch[2], self.blotch[3])
         
         pygame.display.update()
-        self.canvas.fill((0,0,0))
 
 
 #RUN THE GAME!!

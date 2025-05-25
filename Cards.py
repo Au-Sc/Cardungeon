@@ -31,15 +31,23 @@ class Card(Game_Objects.RectangularGameObject):
     def update(self):
         pass
 
-class Enemy_Card(Card):
+class EnemyCard(Card):
     def __init__(self, i_game, i_x, i_y, i_content_img, i_health: int):
         super().__init__(i_game, i_x, i_y, i_content_img)
         self.health = i_health
+        self.attack_cooldown = 3
 
     def get_attacked(self, damage: int):
         self.health -= damage
         if self.health <= 0:
                 self.die()
+
+    def attack_tick(self):
+        if (self.attack_cooldown > 1):
+            self.attack_cooldown -= 1
+        else:
+            self.game.player.get_attacked(1)
+            self.attack_cooldown = 3
     
     def die(self):
         if self.game.board != None:
@@ -51,7 +59,22 @@ class Enemy_Card(Card):
         
     def render(self):
         super().render()
+        
         heart_img = self.game.get_texture("Heart_icon")
         offset = self.width/(self.health + 1)
         for x in range(self.health):
             self.game.canvas.blit(heart_img, (self.x + (x+1)*offset - heart_img.get_width()/2,self.y))
+            
+        attack_in = self.game.small_font.render(str(self.attack_cooldown),True,(255,50,50))
+        attack_rect = attack_in.get_rect()
+        pos = self.get_center_global()
+        pos = (pos[0], pos[1]+15)
+        pos = self.game.scale_to_display_size(pos)
+        attack_rect.center = pos
+        self.game.text_canvas.blit(attack_in, attack_rect)
+
+class WeaponCard(Card):
+    def __init__(self, i_game, i_x, i_y, i_content_img, i_weaponshape, i_damage):
+        super().__init__(i_game, i_x, i_y, i_content_img)
+        self.shape = i_weaponshape
+        self.damage = i_damage
