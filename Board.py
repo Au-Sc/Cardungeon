@@ -2,23 +2,42 @@ import Game_Objects
 import Deck
 import Cards
 
-class Card_board(Game_Objects.RectangularGameObject):
+class Board(Game_Objects.RectangularGameObject):
 
     card_separation_offset = (10,10)
+    card_size = (0,0)
     
-    def __init__(self, game, i_columns, i_rows):
+    def __init__(self, game, i_columns, i_rows, i_card_size: (float,float)):
+        Board.card_size = i_card_size
+        w = Board.card_separation_offset[0] + i_columns*(Board.card_separation_offset[0] + i_card_size[0])
+        h = Board.card_separation_offset[1] + i_rows*(Board.card_separation_offset[1] + i_card_size[1])
         self.COLUMNS = i_columns
         self.ROWS = i_rows
-        super().__init__(game,0,0,0,0)
+        super().__init__(game,0,0,w,h)
         self.grid = [[None for y in range(i_rows)] for x in range(i_columns)]
-        self.game.board = self
+        self.game.game_state.board = self
+        #variables for keeping track of important aspects
+        self.attackers = 0
 
     def is_within_range(self, column, row):
-        if ((column >= 0)and(column <= self.COLUMNS)):
-            if ((row >= 0)and(row <= self.ROWS)):
+        if ((column >= 0)and(column < self.COLUMNS)):
+            if ((row >= 0)and(row < self.ROWS)):
                 return True
         else:
             return False
+
+    def get_cell_under_cursor(self):
+        cell = (-1,-1)
+        pos = tuple(self.game.mouse_pos)
+        pos = (pos[0]-self.x, pos[1]-self.y)
+        xmod = pos[0] % (Board.card_separation_offset[0]+Board.card_size[0])
+        ymod = pos[1] % (Board.card_separation_offset[1]+Board.card_size[1])
+        if (xmod > Board.card_separation_offset[0]
+                and ymod > Board.card_separation_offset[1]
+                and self.contains_point(self.game.mouse_pos)):
+            cell = (int(pos[0] // (Board.card_separation_offset[0]+Board.card_size[0])),
+                    int(pos[1] // (Board.card_separation_offset[1]+Board.card_size[1])))
+        return cell
 
     def put(self, column, row, card):
         if not(self.is_within_range(column, row)):
@@ -26,10 +45,14 @@ class Card_board(Game_Objects.RectangularGameObject):
         
         if isinstance(card, Cards.Card):
             self.grid[column][row] = card;
-            c_x = self.x + Card_board.card_separation_offset[0] + column*(card.width + Card_board.card_separation_offset[0])
-            c_y = self.y + Card_board.card_separation_offset[1] + row*(card.height + Card_board.card_separation_offset[1])
-            card.x = c_x
-            card.y = c_y
+            pos = self.get_position(column, row)
+            card.x = pos[0]
+            card.y = pos[1]
+
+    def get_position(self, column, row):
+        x = self.x + Board.card_separation_offset[0] + column*(Board.card_size[0] + Board.card_separation_offset[0])
+        y = self.y + Board.card_separation_offset[1] + row*(Board.card_size[1] + Board.card_separation_offset[1])
+        return (x,y)
 
     def pop(self, column, row):
         if not(self.is_within_range(column, row)):
@@ -69,17 +92,26 @@ class Card_board(Game_Objects.RectangularGameObject):
                     self.pop(pos[0],y)
                     lowest_empty -= 1
             
-            if (self.game.deck != None):
+            if (self.game.game_state.deck != None):
                 while(lowest_empty != -1):
-                    card = self.game.deck.draw_card()
+                    card = self.game.game_state.deck.draw_card()
                     if (card != None):
                         self.put(pos[0], lowest_empty, card)
                         lowest_empty -= 1
                     else:
                         break
 
+    def action_tick(self):
+        for x in range(self.COLUMNS):
+            for y in range(self.ROWS):
+                self.get(x,y).action_tick()
+
     def render(self):
-        pass
+        for x in range(self.COLUMNS):
+            for y in range(self.ROWS):
+                self.get(x,y).render()
     
     def update(self):
-        pass
+        for x in range(self.COLUMNS):
+            for y in range(self.ROWS):
+                self.get(x,y).update()
